@@ -1,0 +1,10 @@
+# Ignore Python bytecode
+*.pyc
+__pycache__/
+
+# Ignore all text files
+*.txt
+log/
+
+# Ignore temporary data files
+data/additions.xlsx

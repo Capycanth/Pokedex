@@ -36,7 +36,7 @@ class PokedexEntry:
     ball: BallType
     count: int
     gen: int
-    added: bool = False
+    added: bool
 
 @dataclass
 class DatabaseEntry:

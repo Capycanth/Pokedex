@@ -16,12 +16,12 @@ class DataIO:
     #################
     @staticmethod
     def read_additions() -> list[Addition]:
-        df: DataFrame = pd.read_excel(DataIO._additions_path, dtype={"Name": str, "Form": str})
+        df: DataFrame = pd.read_excel(DataIO._additions_path, dtype={"name": str, "form": str})
         data: list[Addition] = []
         for _, row in df.iterrows():
-            data.append(Addition(row["Name"], DataIO._get_form(row)))
+            data.append(Addition(row["name"], DataIO._get_form(row)))
 
-        DataIO._clear_additions()
+        #DataIO._clear_additions()
         return data
 
     @staticmethod
@@ -62,7 +62,8 @@ class DataIO:
                     "name": entry.name,
                     "form": entry.form or "",
                     "ball": entry.ball.value,
-                    "count": entry.count
+                    "count": entry.count,
+                    "gen": entry.gen
                 })
 
         df = pd.DataFrame(rows)
@@ -92,7 +93,7 @@ class DataIO:
     ################
     @staticmethod
     def read_database() -> list[DatabaseEntry]:
-        df: DataFrame = pd.read_excel(DataIO._database_path, dtype={"number": int, "name": str, "form": str})
+        df: DataFrame = pd.read_excel(DataIO._database_path, dtype={"number": int, "name": str, "form": str, "gen": int})
         data: list[DatabaseEntry] = []
 
         for _, row in df.iterrows():
@@ -111,9 +112,12 @@ class DataIO:
     @staticmethod
     def _get_form(row: Series) -> str | None:
         form_value = row.get("form")
-        if isinstance(form_value, str) and form_value.strip() == "":
-            form_value = None
-        return form_value
+        if isinstance(form_value, float):  # catches NaN
+            return None
+        elif isinstance(form_value, str) and form_value.strip() == "":
+            return None
+        else:
+            return form_value
 
     @staticmethod
     def _get_ball(row: Series) -> BallType:
