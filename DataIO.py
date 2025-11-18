@@ -44,7 +44,8 @@ class DataIO:
                 name=row["name"],
                 form=DataIO._get_form(row),
                 ball=DataIO._get_ball(row),
-                count=row["count"]
+                count=row["count"],
+                gen=row["gen"]
             )
 
             data[entry.number].append(entry)
@@ -98,7 +99,8 @@ class DataIO:
             data.append(DatabaseEntry(
                 number=row["number"],
                 name=row["name"],
-                form=DataIO._get_form(row)
+                form=DataIO._get_form(row),
+                gen=row["gen"]
             ))
 
         return data
@@ -113,6 +115,7 @@ class DataIO:
             form_value = None
         return form_value
 
+    @staticmethod
     def _get_ball(row: Series) -> BallType:
         return BallType(row["ball"])
     #endregion

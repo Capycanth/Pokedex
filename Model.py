@@ -35,6 +35,7 @@ class PokedexEntry:
     form: str | None
     ball: BallType
     count: int
+    gen: int
     added: bool = False
 
 @dataclass
@@ -42,3 +43,4 @@ class DatabaseEntry:
     number: int
     name: str
     form: str | None
+    gen: int
