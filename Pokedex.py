@@ -1,0 +1,69 @@
+from Model import Addition, BallType, DatabaseEntry, PokedexEntry
+from DataIO import DataIO
+
+_ball_type_order: list[BallType] = [BallType.POKE, BallType.GREAT, BallType.ULTRA, BallType.MASTER, BallType.LOVE, BallType.PARK] * 10
+
+def run() -> None:
+    pokedex: dict[int, list[PokedexEntry]] = DataIO.read_pokedex()
+    additions: list[Addition] = DataIO.read_additions()
+    database: list[DatabaseEntry] = DataIO.read_database()
+
+    success_log: list[str] = []
+    error_log: list[str] = []
+
+    for addition in additions:
+        search_results: list[DatabaseEntry] = [entry for entry in database if addition.name in entry.name and _does_form_match(addition.form, entry.form)]
+        if len(search_results) == 0:
+            error_log.append(f"Unable to find {addition.name} {addition.form} in database.")
+            continue
+        elif len(search_results) > 1:
+            error_log.append(f"Too many matches in database for {addition.name} {addition.form}.")
+            continue
+
+        db_entry: DatabaseEntry = search_results[0]
+
+        if db_entry.number in pokedex:
+            dex_entries: list[PokedexEntry] = pokedex[db_entry.number]
+            dex_entry_matches: list[PokedexEntry] = [entry for entry in dex_entries if addition.name in entry.name and _does_form_match(addition.form, entry.form)]
+
+            if len(dex_entry_matches) == 0:
+                pokedex[db_entry.number].append(PokedexEntry(db_entry.number, db_entry.name, db_entry.form, BallType.NONE, 1, True))
+                success_log.append(f"[NEW FORM ADDED] | {db_entry.name} {db_entry.form}")
+            elif len(dex_entry_matches) == 1:
+                match: PokedexEntry = dex_entry_matches[0]
+                match.count += 1
+                success_log.append(f"[DUPLICATE ADDED] | {db_entry.name} {db_entry.form} | Total Count: {match.count}")
+            else:
+                error_log.append(f"Multiple entries for the same pokemon form: {db_entry.name} {db_entry.form}")
+        else:
+            pokedex[db_entry.number] = [PokedexEntry(db_entry.number, db_entry.name, db_entry.form, BallType.NONE, 1, True)]
+            success_log.append(f"[NEW POKEMON ADDED] | {db_entry.name} {db_entry.form}")
+
+    success_log.append("\n [Insert Locations] \n")
+
+    ball_type_index: int = 0
+    ball_index: int = 0
+    for _, entries in pokedex.items():
+        for entry in entries:
+            ball_index += 1
+            entry.ball = _ball_type_order[ball_type_index]
+            if entry.added:
+                success_log.append(f"Insert {entry.name} {entry.form} into {entry.ball.value}:{ball_index}")
+        if ball_index > 100:
+            ball_type_index += 1
+            ball_index = 0
+
+    DataIO.write_pokedex(pokedex)
+    DataIO.write_success_log(success_log)
+    DataIO.write_error_log(error_log)
+
+def _does_form_match(add_form: str | None, entry_form: str | None) -> bool:
+    if add_form is None and entry_form is None:
+        return True
+    if add_form is None:
+        return False
+    if entry_form is None:
+        return False
+    return add_form in entry_form
+
+run()
