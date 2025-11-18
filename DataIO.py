@@ -9,6 +9,7 @@ class DataIO:
     _additions_path: str = 'data/additions.xlsx'
     _success_path: str = 'log/success.txt'
     _error_path: str = 'log/error.txt'
+    _database_path: str = 'database.xlsx'
 
     #################
     #region Additions
@@ -90,7 +91,7 @@ class DataIO:
     ################
     @staticmethod
     def read_database() -> list[DatabaseEntry]:
-        df: DataFrame = pd.read_excel(DataIO._pokedex_path, dtype={"number": int, "name": str, "form": str})
+        df: DataFrame = pd.read_excel(DataIO._database_path, dtype={"number": int, "name": str, "form": str})
         data: list[DatabaseEntry] = []
 
         for _, row in df.iterrows():
