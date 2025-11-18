@@ -53,8 +53,8 @@ class DataIO:
     @staticmethod
     def write_pokedex(data: dict[int, list[PokedexEntry]]) -> None:
         rows = []
-        for _, entries in data.items():
-            for entry in entries:
+        for number in sorted(data.keys()):
+            for entry in data[number]:
                 rows.append({
                     "number": entry.number,
                     "name": entry.name,
