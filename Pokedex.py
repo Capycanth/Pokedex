@@ -43,8 +43,8 @@ def run() -> None:
 
     ball_type_index: int = 0
     ball_index: int = 0
-    for _, entries in pokedex.items():
-        for entry in entries:
+    for number in sorted(pokedex.keys()):
+        for entry in pokedex[number]:
             ball_index += 1
             entry.ball = _ball_type_order[ball_type_index]
             if entry.added:
